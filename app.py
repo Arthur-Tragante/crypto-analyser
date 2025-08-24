@@ -178,7 +178,7 @@ class CryptoAnalyserApp:
 
         self.app.run(
             host="0.0.0.0",  # força escutar em todas as interfaces
-            port=80,          # ou 5000 se quiser evitar sudo
+            port=5000,          # ou 5000 se quiser evitar sudo
             debug=False
         )
 
