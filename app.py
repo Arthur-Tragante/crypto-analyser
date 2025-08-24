@@ -24,6 +24,11 @@ except ImportError:
     FCM_ENABLED = False
     fcm_service = None
 
+class ServerSettings:
+    host = "0.0.0.0"
+    port = 80
+    debug = False
+
 class CryptoAnalyserApp:
     """Classe principal da aplicação"""
     
@@ -107,7 +112,7 @@ class CryptoAnalyserApp:
                     
             except Exception as e:
                 print(f"Erro no sender periódico: {e}")
-                time.sleep(600)
+                time.sleep(60)
     
     def _send_formatted_notification(self):
         """Envia notificação formatada para todos os canais"""
@@ -172,9 +177,9 @@ class CryptoAnalyserApp:
         print("="*50)
 
         self.app.run(
-            host=settings.server.host, 
-            port=settings.server.port, 
-            debug=settings.server.debug
+            host="0.0.0.0",  # força escutar em todas as interfaces
+            port=80,          # ou 5000 se quiser evitar sudo
+            debug=False
         )
 
 def main():
