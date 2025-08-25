@@ -157,7 +157,7 @@ class CryptoService:
             return "Dados não disponíveis"
         
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        width = 80  # Aumentado para acomodar mais moedas
+        width = 50  # Largura compacta e alinhada
         
         display_text = ""
         display_text += "╔" + "═" * width + "╗\n"
@@ -188,18 +188,19 @@ class CryptoService:
                 name = crypto.name
                 price_text = crypto.formatted_price
                 
-                # Formato simples e alinhado: Nome (SYMBOL): preço
-                line = f"║ {name:<12} ({symbol.upper():<4}): R$ {price_text}"
+                # Formato ultra compacto: Nome (SYM): preço
+                name_short = name[:6]  # Limita nome a 6 caracteres
+                line = f"║{name_short:<6} ({symbol.upper()}): R$ {price_text}"
                 
                 # Calcula espaços necessários para completar a largura
-                spaces_needed = width - len(line) + 1  # +1 porque queremos chegar até a borda
+                spaces_needed = width - len(line) + 1
                 
                 if spaces_needed > 0:
                     display_text += line + " " * spaces_needed + "║\n"
                 else:
                     # Trunca se necessário
-                    max_content = width - 3  # 3 = "║" + espaço + "║"
-                    content = f" {name:<12} ({symbol.upper():<4}): R$ {price_text}"
+                    max_content = width - 2
+                    content = f"{name_short:<6} ({symbol.upper()}): R$ {price_text}"
                     if len(content) > max_content:
                         content = content[:max_content-3] + "..."
                     display_text += f"║{content:<{max_content}}║\n"
@@ -212,25 +213,25 @@ class CryptoService:
             display_text += "╠" + "═" * width + "╣\n"
             
             if btc:
-                btc_line = f"║ Níveis BTC: L={self._format_brl(self.alert_config.btc_lowest)} H={self._format_brl(self.alert_config.btc_high)}"
+                btc_line = f"║BTC: L={self._format_brl(self.alert_config.btc_lowest)} H={self._format_brl(self.alert_config.btc_high)}"
                 spaces_needed = width - len(btc_line) + 1
                 if spaces_needed > 0:
                     display_text += btc_line + " " * spaces_needed + "║\n"
                 else:
                     max_content = width - 2
-                    content = f" Níveis BTC: L={self._format_brl(self.alert_config.btc_lowest)} H={self._format_brl(self.alert_config.btc_high)}"
+                    content = f"BTC: L={self._format_brl(self.alert_config.btc_lowest)} H={self._format_brl(self.alert_config.btc_high)}"
                     if len(content) > max_content:
                         content = content[:max_content-3] + "..."
                     display_text += f"║{content:<{max_content}}║\n"
                 
             if eth:
-                eth_line = f"║ Níveis ETH: L={self._format_brl(self.alert_config.eth_lowest)} H={self._format_brl(self.alert_config.eth_high)}"
+                eth_line = f"║ETH: L={self._format_brl(self.alert_config.eth_lowest)} H={self._format_brl(self.alert_config.eth_high)}"
                 spaces_needed = width - len(eth_line) + 1
                 if spaces_needed > 0:
                     display_text += eth_line + " " * spaces_needed + "║\n"
                 else:
                     max_content = width - 2
-                    content = f" Níveis ETH: L={self._format_brl(self.alert_config.eth_lowest)} H={self._format_brl(self.alert_config.eth_high)}"
+                    content = f"ETH: L={self._format_brl(self.alert_config.eth_lowest)} H={self._format_brl(self.alert_config.eth_high)}"
                     if len(content) > max_content:
                         content = content[:max_content-3] + "..."
                     display_text += f"║{content:<{max_content}}║\n"
