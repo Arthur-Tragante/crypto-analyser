@@ -156,14 +156,44 @@ class CryptoService:
         if not available_cryptos:
             return "Dados não disponíveis"
         
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        width = 50  # Largura compacta e alinhada
+        timestamp = datetime.now().strftime("%d/%m %H:%M")  # Formato compacto: DD/MM HH:MM
         
+        # Calcula largura dinâmica baseada no conteúdo
+        lines_content = []
+        
+        # Adiciona conteúdos que serão exibidos
+        lines_content.append(" CRYPTO ANALYSER")
+        lines_content.append(f" Atualizado: {timestamp}")
+        
+        # Adiciona linhas de preços
+        crypto_order = ["btc", "eth", "xrp", "ada", "bnb", "sol", "doge", "dot", "matic", "ltc", "avax", "shib"]
+        for symbol in crypto_order:
+            if symbol in available_cryptos:
+                crypto = available_cryptos[symbol]
+                name = crypto.name
+                price_text = crypto.formatted_price
+                lines_content.append(f"{name} ({symbol.upper()}): R$ {price_text}")
+        
+        # Adiciona linhas de alertas se existirem
+        btc = available_cryptos.get("btc")
+        eth = available_cryptos.get("eth")
+        if btc:
+            lines_content.append(f"BTC: L={self._format_brl(self.alert_config.btc_lowest)} H={self._format_brl(self.alert_config.btc_high)}")
+        if eth:
+            lines_content.append(f"ETH: L={self._format_brl(self.alert_config.eth_lowest)} H={self._format_brl(self.alert_config.eth_high)}")
+        
+        # Calcula largura necessária (maior linha + margem mínima)
+        max_content_length = max(len(line) for line in lines_content)
+        width = max_content_length + 2  # +2 para espaços mínimos nas bordas
+        
+        # Inicia construção do display
         display_text = ""
         display_text += "╔" + "═" * width + "╗\n"
         display_text += "║" + " CRYPTO ANALYSER".center(width) + "║\n"
         display_text += "╠" + "═" * width + "╣\n"
-        display_text += f"║ Última atualização: {timestamp}{' ' * (width - len(f' Última atualização: {timestamp}'))}║\n"
+        update_line = f"║ Atualizado: {timestamp}"
+        spaces_needed = width - len(update_line) + 1
+        display_text += update_line + " " * spaces_needed + "║\n"
         display_text += "╠" + "═" * width + "╣\n"
         
         # Coleta alertas de todas as moedas
@@ -180,17 +210,14 @@ class CryptoService:
             display_text += "╠" + "═" * width + "╣\n"
         
         # Exibe preços de todas as moedas em ordem
-        crypto_order = ["btc", "eth", "xrp", "ada", "bnb", "sol", "doge", "dot", "matic", "ltc", "avax", "shib"]
-        
         for symbol in crypto_order:
             if symbol in available_cryptos:
                 crypto = available_cryptos[symbol]
                 name = crypto.name
                 price_text = crypto.formatted_price
                 
-                # Formato ultra compacto: Nome (SYM): preço
-                name_short = name[:6]  # Limita nome a 6 caracteres
-                line = f"║{name_short:<6} ({symbol.upper()}): R$ {price_text}"
+                # Formato com nome completo: Nome (SYM): preço
+                line = f"║{name} ({symbol.upper()}): R$ {price_text}"
                 
                 # Calcula espaços necessários para completar a largura
                 spaces_needed = width - len(line) + 1
@@ -200,14 +227,12 @@ class CryptoService:
                 else:
                     # Trunca se necessário
                     max_content = width - 2
-                    content = f"{name_short:<6} ({symbol.upper()}): R$ {price_text}"
+                    content = f"{name} ({symbol.upper()}): R$ {price_text}"
                     if len(content) > max_content:
                         content = content[:max_content-3] + "..."
                     display_text += f"║{content:<{max_content}}║\n"
         
         # Seção de níveis de alerta (apenas BTC e ETH por espaço)
-        btc = available_cryptos.get("btc")
-        eth = available_cryptos.get("eth")
         
         if btc or eth:
             display_text += "╠" + "═" * width + "╣\n"
