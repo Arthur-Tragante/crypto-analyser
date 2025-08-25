@@ -13,17 +13,13 @@ class AlertConfig:
     eth_lowest: Optional[float] = None
     eth_high: Optional[float] = None
 
-@dataclass
-class WebSocketConfig:
-    """Configurações do WebSocket"""
-    btc_url: str = "wss://stream.binance.com:9443/ws/btcbrl@ticker"
-    eth_url: str = "wss://stream.binance.com:9443/ws/ethbrl@ticker"
+
 
 @dataclass
 class NotificationConfig:
     """Configurações de notificações"""
     fcm_topic: str = "crypto_alerts"
-    notification_interval: int = 30  # segundos
+    notification_interval: int = 600  # segundos
 
 @dataclass
 class ServerConfig:
@@ -44,7 +40,6 @@ class Settings:
     
     def __init__(self):
         self.alerts = AlertConfig()
-        self.websocket = WebSocketConfig()
         self.notifications = NotificationConfig()
         self.server = ServerConfig()
         self.firebase = FirebaseConfig()

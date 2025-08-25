@@ -8,8 +8,6 @@ import jwt
 import time
 from typing import Dict, Any, Optional
 from datetime import datetime
-            
-            
 
 class FirestoreService:
     """Serviço para gerenciar configurações no Firestore"""
@@ -143,7 +141,7 @@ class FirestoreService:
                 'btc_high': btc_config.get('btc_high') if btc_config else None,
                 'eth_lowest': eth_config.get('eth_lowest') if eth_config else None,
                 'eth_high': eth_config.get('eth_high') if eth_config else None,
-                'notification_interval': 30  # Valor padrão
+                'notification_interval': self._get_default_notification_interval()
             }
             return combined_config
         return None
@@ -231,9 +229,14 @@ class FirestoreService:
         if 'Moeda' in raw_data:
             result['moeda'] = raw_data['Moeda']
         
-        result['notification_interval'] = 30
+        result['notification_interval'] = self._get_default_notification_interval()
         
         return result
+    
+    def _get_default_notification_interval(self) -> int:
+        """Obtém o intervalo padrão de notificação das configurações"""
+        from ..config.settings import settings
+        return settings.notifications.notification_interval
     
     def _convert_dict_to_firestore(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Converte dict normal para formato Firestore usando sua estrutura"""
@@ -269,6 +272,46 @@ class FirestoreService:
         except Exception as e:
             print(f"Erro ao verificar configuração: {e}")
             return False
+    
+    def get_notify_coins(self) -> Optional[list]:
+        """Busca lista de moedas da coleção 'notify'"""
+        try:
+            access_token = self._get_access_token()
+            if not access_token:
+                print("Não foi possível obter token para buscar notify")
+                return None
+            
+            headers = self._build_headers(access_token)
+            url = f"{self.firestore_url}/notify"
+            
+            response = requests.get(url, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if 'documents' in data:
+                    coins = []
+                    for doc in data['documents']:
+                        if 'fields' in doc and 'name' in doc['fields']:
+                            name_field = doc['fields']['name']
+                            if 'stringValue' in name_field:
+                                coin_name = name_field['stringValue'].lower()
+                                coins.append(coin_name)
+                    print(f"Moedas para notificação: {coins}")
+                    return coins
+                else:
+                    print("Coleção notify existe mas não tem documentos")
+                    return []
+            elif response.status_code == 404:
+                print("Coleção notify não encontrada")
+                return []
+            else:
+                print(f"Erro ao buscar notify: {response.status_code}")
+                print(f"Response: {response.text}")
+                return None
+                
+        except Exception as e:
+            print(f"Erro ao buscar notify: {e}")
+            return None
     
     def get_current_prices_for_storage(self, btc_price: float, eth_price: float) -> bool:
         """Salva preços atuais no Firestore para histórico"""

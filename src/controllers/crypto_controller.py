@@ -9,9 +9,9 @@ from ..repositories.crypto_repository import CryptoRepository
 class CryptoController:
     """Controller para endpoints de criptomoedas"""
     
-    def __init__(self):
-        self.repository = CryptoRepository()
-        self.service = CryptoService(self.repository)
+    def __init__(self, repository=None, service=None):
+        self.repository = repository or CryptoRepository()
+        self.service = service or CryptoService(self.repository)
     
     def get_home(self):
         """Endpoint raiz com informações da API"""

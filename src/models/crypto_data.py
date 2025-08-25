@@ -13,6 +13,16 @@ class CryptoSymbol(Enum):
     """Símbolos das criptomoedas"""
     BTC = "BTC"
     ETH = "ETH"
+    XRP = "XRP"
+    BNB = "BNB"
+    ADA = "ADA"
+    SOL = "SOL"
+    DOGE = "DOGE"
+    DOT = "DOT"
+    MATIC = "MATIC"
+    LTC = "LTC"
+    AVAX = "AVAX"
+    SHIB = "SHIB"
 
 @dataclass
 class CryptoPrice:
@@ -31,8 +41,22 @@ class CryptoPrice:
         self.last_update = datetime.now()
     
     def _format_brl(self, price: float) -> str:
-        """Formata preço para BRL"""
-        return f"{price:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        """Formata preço para BRL com casas decimais inteligentes"""
+        if price < 0.01:
+            # Para preços muito baixos, usa até 8 casas decimais
+            formatted = f"{price:.8f}".rstrip('0').rstrip('.')
+            # Se ainda for 0, usa formatação científica
+            if float(formatted) == 0:
+                return f"{price:.2e}"
+        elif price < 1.0:
+            # Para preços baixos, usa 4 casas decimais
+            formatted = f"{price:.4f}".rstrip('0').rstrip('.')
+        else:
+            # Para preços normais, usa 2 casas decimais
+            formatted = f"{price:,.2f}"
+        
+        # Aplica formatação brasileira (ponto para milhares, vírgula para decimais)
+        return formatted.replace(",", "X").replace(".", ",").replace("X", ".")
     
     def get_icon(self) -> str:
         """Retorna ícone baseado no status"""
@@ -64,17 +88,32 @@ class SystemStatus:
 
 @dataclass
 class NotificationData:
-    """Dados para notificações"""
-    btc_price: CryptoPrice
-    eth_price: CryptoPrice
+    """Dados para notificações - suporte a múltiplas moedas"""
+    crypto_prices: dict  # Dict[str, CryptoPrice]
     timestamp: datetime
     
     def to_dict(self) -> dict:
         """Converte para dicionário"""
-        return {
-            "btc_price": str(self.btc_price.price or 0),
-            "eth_price": str(self.eth_price.price or 0),
-            "btc_status": self.btc_price.alert_status.value,
-            "eth_status": self.eth_price.alert_status.value,
+        result = {
             "timestamp": self.timestamp.isoformat()
         }
+        
+        for symbol, crypto in self.crypto_prices.items():
+            result[f"{symbol}_price"] = str(crypto.price or 0)
+            result[f"{symbol}_status"] = crypto.alert_status.value
+            
+        return result
+    
+    def has_alerts(self) -> bool:
+        """Verifica se alguma moeda está em alerta"""
+        return any(
+            crypto.alert_status in [AlertStatus.ALTA, AlertStatus.BAIXA] 
+            for crypto in self.crypto_prices.values()
+        )
+    
+    def get_alert_coins(self) -> list:
+        """Retorna lista de moedas em alerta"""
+        return [
+            symbol for symbol, crypto in self.crypto_prices.items()
+            if crypto.alert_status in [AlertStatus.ALTA, AlertStatus.BAIXA]
+        ]

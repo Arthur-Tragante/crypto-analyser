@@ -11,17 +11,29 @@ class CryptoRepository:
     """Repositório para gerenciar dados de criptomoedas"""
     
     def __init__(self):
-        self._crypto_data: Dict[str, CryptoPrice] = {
-            "btc": CryptoPrice(
-                symbol=CryptoSymbol.BTC,
-                name="Bitcoin"
-            ),
-            "eth": CryptoPrice(
-                symbol=CryptoSymbol.ETH,
-                name="Ethereum"
-            )
-        }
+        self._crypto_data: Dict[str, CryptoPrice] = {}
         self._system_status = SystemStatus()
+        self._initialize_crypto_data()
+    
+    def _initialize_crypto_data(self):
+        """Inicializa dados das criptomoedas"""
+        crypto_configs = {
+            "btc": (CryptoSymbol.BTC, "Bitcoin"),
+            "eth": (CryptoSymbol.ETH, "Ethereum"),
+            "xrp": (CryptoSymbol.XRP, "Ripple"),
+            "bnb": (CryptoSymbol.BNB, "BNB"),
+            "ada": (CryptoSymbol.ADA, "Cardano"),
+            "sol": (CryptoSymbol.SOL, "Solana"),
+            "doge": (CryptoSymbol.DOGE, "Dogecoin"),
+            "dot": (CryptoSymbol.DOT, "Polkadot"),
+            "matic": (CryptoSymbol.MATIC, "Polygon"),
+            "ltc": (CryptoSymbol.LTC, "Litecoin"),
+            "avax": (CryptoSymbol.AVAX, "Avalanche"),
+            "shib": (CryptoSymbol.SHIB, "Shiba Inu")
+        }
+        
+        for key, (symbol, name) in crypto_configs.items():
+            self._crypto_data[key] = CryptoPrice(symbol=symbol, name=name)
     
     def get_crypto_by_symbol(self, symbol: str) -> Optional[CryptoPrice]:
         """Busca criptomoeda por símbolo"""

@@ -5,7 +5,7 @@ Sistema refatorado seguindo melhores práticas para monitorar preços de Bitcoin
 ## 🚀 Funcionalidades
 
 ### 📊 Consulta de Preços
-- Preços em tempo real via WebSocket Binance
+- Preços em tempo real via API REST Binance
 - Bitcoin (BTC) e Ethereum (ETH) em BRL
 - API REST para integração
 - Interface visual ASCII
@@ -35,7 +35,7 @@ crypto_analyser/
 │   │   ├── crypto_controller.py   # Gatilhos HTTP
 │   │   └── notification_controller.py
 │   └── utils/
-│       └── websocket_manager.py   # Utilitários
+│       └── (utilitários removidos)
 
 ├── service-account.json           # Credenciais Firebase
 └── google-services.json          # Configuração Firebase
@@ -88,9 +88,9 @@ python app.py
 ## 🎯 Uso
 
 O sistema inicia automaticamente e:
-1. Conecta aos WebSockets da Binance
+1. Conecta à API REST da Binance
 2. Monitora preços em tempo real
-3. Envia notificações formatadas a cada 30 segundos
+3. Envia notificações formatadas a cada 10 minutos (configurável)
 4. Disponibiliza API REST em `http://localhost:5000`
 
 **Sistema limpo, focado e funcional!** 🎉
