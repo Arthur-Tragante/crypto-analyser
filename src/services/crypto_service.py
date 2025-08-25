@@ -158,33 +158,8 @@ class CryptoService:
         
         timestamp = datetime.now().strftime("%d/%m %H:%M")  # Formato compacto: DD/MM HH:MM
         
-        # Calcula largura dinâmica baseada no conteúdo
-        lines_content = []
-        
-        # Adiciona conteúdos que serão exibidos
-        lines_content.append(" CRYPTO ANALYSER")
-        lines_content.append(f" Atualizado: {timestamp}")
-        
-        # Adiciona linhas de preços
-        crypto_order = ["btc", "eth", "xrp", "ada", "bnb", "sol", "doge", "dot", "matic", "ltc", "avax", "shib"]
-        for symbol in crypto_order:
-            if symbol in available_cryptos:
-                crypto = available_cryptos[symbol]
-                name = crypto.name
-                price_text = crypto.formatted_price
-                lines_content.append(f"{name} ({symbol.upper()}): R$ {price_text}")
-        
-        # Adiciona linhas de alertas se existirem
-        btc = available_cryptos.get("btc")
-        eth = available_cryptos.get("eth")
-        if btc:
-            lines_content.append(f"BTC: L={self._format_brl(self.alert_config.btc_lowest)} H={self._format_brl(self.alert_config.btc_high)}")
-        if eth:
-            lines_content.append(f"ETH: L={self._format_brl(self.alert_config.eth_lowest)} H={self._format_brl(self.alert_config.eth_high)}")
-        
-        # Calcula largura necessária (maior linha + margem mínima)
-        max_content_length = max(len(line) for line in lines_content)
-        width = max_content_length + 2  # +2 para espaços mínimos nas bordas
+        # Largura fixa otimizada para mobile (compatível PC/Android)
+        width = 35  # Largura que funciona bem em ambos
         
         # Inicia construção do display
         display_text = ""
@@ -210,6 +185,8 @@ class CryptoService:
             display_text += "╠" + "═" * width + "╣\n"
         
         # Exibe preços de todas as moedas em ordem
+        crypto_order = ["btc", "eth", "xrp", "ada", "bnb", "sol", "doge", "dot", "matic", "ltc", "avax", "shib"]
+        
         for symbol in crypto_order:
             if symbol in available_cryptos:
                 crypto = available_cryptos[symbol]
@@ -233,6 +210,8 @@ class CryptoService:
                     display_text += f"║{content:<{max_content}}║\n"
         
         # Seção de níveis de alerta (apenas BTC e ETH por espaço)
+        btc = available_cryptos.get("btc")
+        eth = available_cryptos.get("eth")
         
         if btc or eth:
             display_text += "╠" + "═" * width + "╣\n"
