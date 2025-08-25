@@ -79,7 +79,7 @@ class CryptoAnalyserApp:
         print("  GET /test/display           - Testar display com todas as moedas")
         print("  GET /debug/prices           - Diagnóstico de instâncias")
         print("="*50)
-        print("Usando API REST da Binance (consultas a cada 1 minuto)")
+        print("Usando API REST do CoinGecko (consultas a cada 1 minuto)")
         print("="*50)
 
         self.app.run(

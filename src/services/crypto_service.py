@@ -7,7 +7,7 @@ from datetime import datetime
 from ..models.crypto_data import CryptoPrice, AlertStatus, NotificationData
 from ..repositories.crypto_repository import CryptoRepository
 from ..config.settings import settings
-from .binance_api_service import binance_api_service
+from .coingecko_api_service import coingecko_api_service
 
 
 class CryptoService:
@@ -25,11 +25,11 @@ class CryptoService:
         return success
     
     def update_prices_from_api(self):
-        """Atualiza preços via API REST da Binance"""
+        """Atualiza preços via API REST do CoinGecko"""
         try:
             # Busca todas as moedas suportadas
-            all_coins = list(binance_api_service.symbols.keys())
-            prices = binance_api_service.get_multiple_prices(all_coins)
+            all_coins = list(coingecko_api_service.coin_ids.keys())
+            prices = coingecko_api_service.get_multiple_prices(all_coins)
             
             for symbol, price in prices.items():
                 if price is not None:

@@ -5,8 +5,9 @@ Sistema refatorado seguindo melhores práticas para monitorar preços de Bitcoin
 ## 🚀 Funcionalidades
 
 ### 📊 Consulta de Preços
-- Preços em tempo real via API REST Binance
-- Bitcoin (BTC) e Ethereum (ETH) em BRL
+- Preços em tempo real via API REST CoinGecko
+- 12 criptomoedas suportadas: BTC, ETH, XRP, BNB, ADA, SOL, DOGE, DOT, MATIC, LTC, AVAX, SHIB
+- Preços em BRL com formatação inteligente
 - API REST para integração
 - Interface visual ASCII
 
@@ -88,7 +89,7 @@ python app.py
 ## 🎯 Uso
 
 O sistema inicia automaticamente e:
-1. Conecta à API REST da Binance
+1. Conecta à API REST do CoinGecko
 2. Monitora preços em tempo real
 3. Envia notificações formatadas a cada 10 minutos (configurável)
 4. Disponibiliza API REST em `http://localhost:5000`
